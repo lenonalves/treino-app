@@ -1,4 +1,4 @@
-const CACHE = "treino-v3";
+const CACHE = "treino-v4";
 const ARQUIVOS = ["./", "./index.html", "./manifest.webmanifest",
   "./icon-192.png", "./icon-512.png", "./icon-180.png", "./icon-maskable.png"];
 
