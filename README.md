@@ -18,6 +18,9 @@ estilo HUD de jogo.
 - **Memória de carga** — cada série mostra o que você fez na mesma série da semana passada.
 - **Editor de plano** — renomear exercícios, mudar séries, adicionar ou remover, definir
   a duração do ciclo. Ao terminar a periodização, o ciclo vai para o histórico e um novo começa.
+- **Catálogo de exercícios** — busca entre 5.632 exercícios em português (por nome, músculo, equipamento ou
+  grupo muscular) ao adicionar ou trocar exercícios no plano, e um painel *Como fazer* com o passo a passo
+  na tela do exercício. Baixado só quando você abre a busca e depois funciona offline.
 - **Aba Corpo** — peso, percentual de gordura e nove medidas exibidas sobre um boneco,
   com a variação em relação à avaliação anterior.
 - **XP e ofensiva** — porque terminar a série rende mais quando tem número subindo.
@@ -34,6 +37,8 @@ dados ficam no `localStorage`.
 | `index.html` | O app inteiro: interface, estilos e lógica |
 | `manifest.webmanifest` | Nome, ícone e cores do app instalado |
 | `sw.js` | Cache para funcionar sem internet |
+| `catalogo/` | Catálogo de exercícios (dados do [openGym](https://github.com/DuarteSantos8/openGym), [licença própria](catalogo/LEIAME.md)) |
+| `scripts/gerar-catalogo.py` | Regera o catálogo a partir de um clone do openGym |
 | `icon-*.png` | Ícones da tela de início |
 
 ## Rodar localmente
@@ -57,4 +62,5 @@ interface, mas o service worker só liga em `http(s)`.
 
 ## Licença
 
-MIT — use, copie e adapte à vontade.
+MIT para o app. A pasta `catalogo/` vem do openGym (AGPL-3.0 e MIT) e tem as condições descritas em
+[`catalogo/LEIAME.md`](catalogo/LEIAME.md).
