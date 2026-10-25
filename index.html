@@ -280,6 +280,21 @@ h2.sec{font-size:1.05rem;font-weight:800;margin:.4rem 0 .8rem}
 .pick .addex{margin-top:.5rem}
 .pick .fechar{margin-top:.5rem}
 
+/* desenho do exercício: as duas poses se alternam */
+.fig{position:relative;background:#fff;border-radius:.8rem;overflow:hidden;aspect-ratio:1}
+.fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.fig img+img{animation:figpose 2.2s ease-in-out infinite}
+@keyframes figpose{0%,40%{opacity:0}46%,86%{opacity:1}92%,100%{opacity:0}}
+.figcard{display:flex;justify-content:center;margin:0 0 1rem;padding:.5rem;border:2px solid var(--borda);
+  border-radius:1rem;background:var(--surface)}
+.figcard .fig{width:min(100%,12rem)}
+.credito{margin:-.6rem 0 1rem;text-align:center;font-size:.68rem;color:var(--fraco)}
+.credito a{color:inherit}
+.pick-it{display:flex;align-items:center;gap:.7rem}
+.pick-it .fig{flex:none;width:3.4rem;height:3.4rem;border:1px solid var(--borda)}
+.pick-it .ph{flex:none;width:3.4rem;height:3.4rem;border-radius:.8rem;background:var(--trilho)}
+.pick-it>span{min-width:0}
+.pick-it .fig img+img{animation:none;display:none}
 /* como fazer */
 .como{border:2px solid var(--borda);border-radius:1rem;background:var(--surface);margin:0 0 1rem}
 .como summary{cursor:pointer;list-style:none;padding:.7rem .9rem;font-weight:800;font-size:.85rem;display:flex;
@@ -560,6 +575,7 @@ function vEx(){
     +'<span>'+esc(d.titulo)+' · Semana '+S.semana+'</span><span class="cont" aria-label="Exercício '+(j+1)+' de '+d.ex.length+'">'+(j+1)+'/'+d.ex.length+'</span></div>'
     +'<h1>'+esc(e.nome)+'</h1><div class="exercise-progress"><strong id="ex-status" aria-live="polite">'+feitas+' de '+e.series+' séries concluídas</strong>'
     +'<span>Descanso: 60s</span></div><div class="track"><i id="ex-progress" style="width:'+feitas/e.series*100+'%"></i></div></header>'
+    +(e.img?'<div class="figcard">'+figura(e.img,true)+'</div><p class="credito">Desenho: <a href="https://everkinetic.com" target="_blank" rel="noopener">Everkinetic</a> · CC BY-SA 4.0</p>':"")
     +(e.cat?'<details class="como" data-cat="'+e.cat+'"><summary>Como fazer</summary><div class="como-corpo">Carregando…</div></details>':"")
     +'<p class="registration-hint">Ajuste os valores e conclua cada série para salvar.</p>'
     +'<div class="sets stagger" style="'+varCor(i)+'">'+sets+'</div>'
@@ -943,7 +959,7 @@ function carrega(url){
 }
 function carregaCat(){
   if(!CAT) CAT=carrega("catalogo/indice.json").then(d=>{
-    d.ex=d.ex.map(([id,nome,p,q,a])=>({id,nome,p,q,a,
+    d.ex=d.ex.map(([id,nome,p,q,a,img])=>({id,nome,p,q,a,img,
       nb:semAcento(nome),eb:semAcento(d.alvos[a]+" "+d.equip[q])}));
     d.porId=new Map(d.ex.map(x=>[x.id,x]));
     return d;
@@ -954,6 +970,9 @@ function carregaPassos(){
   if(!PASSOS) PASSOS=carrega("catalogo/passos.json").catch(e=>{PASSOS=null;throw e});
   return PASSOS;
 }
+/* as duas poses do desenho (Everkinetic); n = número do desenho */
+const figura=(n,anima)=>'<div class="fig" aria-hidden="true"><img src="catalogo/img/'+n+'-0.webp" alt="" loading="lazy">'
+  +(anima?'<img src="catalogo/img/'+n+'-1.webp" alt="" loading="lazy">':"")+'</div>';
 function novoEx(diaId,extra){
   const d=dia(diaId);
   d.ex.push(Object.assign({uid:d.id+"-"+Math.random().toString(36).slice(2,7),nome:"Novo exercício",series:3},extra));
@@ -994,10 +1013,11 @@ function atualizaPick(){
       }
       if(sc>=0)achados.push([sc,x]);
     }
-    achados.sort((a,b)=>a[0]-b[0]||a[1].nome.length-b[1].nome.length||a[1].nome.localeCompare(b[1].nome,"pt-BR"));
+    achados.sort((a,b)=>a[0]-b[0]||!a[1].img-!b[1].img||a[1].nome.length-b[1].nome.length||a[1].nome.localeCompare(b[1].nome,"pt-BR"));
     const MAX=60, mostra=achados.slice(0,MAX);
     lista.innerHTML=mostra.length?mostra.map(([,x])=>'<li><button class="pick-it press" data-a="pickEsc" data-id="'+x.id+'">'
-      +'<strong>'+esc(x.nome)+'</strong><small>'+c.alvos[x.a]+' · '+c.equip[x.q]+'</small></button></li>').join("")
+      +(x.img?figura(x.img,false):'<i class="ph"></i>')
+      +'<span><strong>'+esc(x.nome)+'</strong><small>'+c.alvos[x.a]+' · '+c.equip[x.q]+'</small></span></button></li>').join("")
       +(achados.length>MAX?'<li class="pick-msg">Mostrando '+MAX+' de '+achados.length+'. Digite mais para refinar.</li>':"")
       :'<li class="pick-msg">Nada encontrado para essa busca.</li>';
     lista.scrollTop=0;
@@ -1006,8 +1026,8 @@ function atualizaPick(){
 function escolheEx(id){
   CAT.then(c=>{
     const x=c.porId.get(id); if(!x)return;
-    if(pick.u){const e=achaEx(pick.u); e.nome=x.nome; e.cat=x.id; salvar()}
-    else novoEx(pick.d,{nome:x.nome,cat:x.id});
+    if(pick.u){const e=achaEx(pick.u); e.nome=x.nome; e.cat=x.id; e.img=x.img||undefined; salvar()}
+    else novoEx(pick.d,{nome:x.nome,cat:x.id,img:x.img||undefined});
     fecharSheet(null,true); render("fwd");
   });
 }
