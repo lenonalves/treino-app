@@ -257,6 +257,56 @@ h2.sec{font-size:1.05rem;font-weight:800;margin:.4rem 0 .8rem}
 .del{width:1.9rem;height:1.9rem;border-radius:.6rem;color:var(--fraco);font-size:1.1rem;flex:none;--dep:2px}
 .addex{width:100%;border:2px dashed var(--borda);border-radius:.8rem;padding:.5rem;font-weight:800;
   font-size:.82rem;color:var(--fraco)}
+.eex .troca{width:1.9rem;height:1.9rem;border-radius:.6rem;border:2px solid var(--borda);background:var(--bg);
+  color:var(--fraco);flex:none;display:grid;place-items:center;--dep:2px}
+.eex .troca svg{width:1rem;height:1rem;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+
+/* catálogo de exercícios */
+.sheet.pick{display:flex;flex-direction:column;height:90dvh}
+.pick-q{width:100%;background:var(--bg);border:2px solid var(--borda);border-radius:.9rem;padding:.7rem .85rem;
+  font-weight:700;font-size:.95rem;outline:none;margin-bottom:.6rem}
+.pick-q:focus{border-color:var(--action)}
+.pick-chips{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.5rem;margin:0 -.2rem .2rem;scrollbar-width:none}
+.pick-chips::-webkit-scrollbar{display:none}
+.pick-chips button{flex:none;border:2px solid var(--borda);background:var(--surface);border-radius:2rem;
+  padding:.35rem .75rem;font-weight:800;font-size:.78rem;color:var(--fraco)}
+.pick-chips button.on{background:var(--action);border-color:var(--action);color:var(--action-text)}
+.pick-lista{list-style:none;margin:0;padding:0;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.pick-it{width:100%;text-align:left;display:block;border:2px solid var(--borda);border-radius:.9rem;
+  padding:.6rem .75rem;margin-bottom:.4rem;background:var(--surface)}
+.pick-it strong{display:block;font-weight:800;font-size:.9rem}
+.pick-it small{color:var(--fraco);font-weight:700;font-size:.74rem}
+.pick-msg{color:var(--fraco);font-weight:700;font-size:.85rem;line-height:1.5;padding:.4rem .2rem}
+.pick .addex{margin-top:.5rem}
+.pick .fechar{margin-top:.5rem}
+
+/* desenho do exercício: as duas poses se alternam */
+.fig{position:relative;background:#fff;border-radius:.8rem;overflow:hidden;aspect-ratio:1}
+.fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.fig img+img{animation:figpose 2.2s ease-in-out infinite}
+@keyframes figpose{0%,40%{opacity:0}46%,86%{opacity:1}92%,100%{opacity:0}}
+.figcard{display:flex;justify-content:center;margin:0 0 1rem;padding:.5rem;border:2px solid var(--borda);
+  border-radius:1rem;background:var(--surface)}
+.figcard .fig{width:min(100%,12rem)}
+.credito{margin:-.6rem 0 1rem;text-align:center;font-size:.68rem;color:var(--fraco)}
+.credito a{color:inherit}
+.pick-it{display:flex;align-items:center;gap:.7rem}
+.pick-it .fig{flex:none;width:3.4rem;height:3.4rem;border:1px solid var(--borda)}
+.pick-it .ph{flex:none;width:3.4rem;height:3.4rem;border-radius:.8rem;background:var(--trilho)}
+.pick-it>span{min-width:0}
+.pick-it .fig img+img{animation:none;display:none}
+/* como fazer */
+.como{border:2px solid var(--borda);border-radius:1rem;background:var(--surface);margin:0 0 1rem}
+.como summary{cursor:pointer;list-style:none;padding:.7rem .9rem;font-weight:800;font-size:.85rem;display:flex;
+  justify-content:space-between;align-items:center}
+.como summary::-webkit-details-marker{display:none}
+.como summary::after{content:"+";font-size:1.2rem;color:var(--fraco)}
+.como[open] summary::after{content:"−"}
+.como-corpo{padding:0 .9rem .85rem;font-size:.84rem;line-height:1.5}
+.como-corpo ol{margin:.6rem 0 0;padding-left:1.2rem}
+.como-corpo li{margin-bottom:.35rem}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.tags span{background:var(--trilho);border-radius:2rem;padding:.2rem .6rem;font-size:.72rem;font-weight:800}
 
 /* tabs */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;display:none;justify-content:center;gap:.2rem;
@@ -525,6 +575,8 @@ function vEx(){
     +'<span>'+esc(d.titulo)+' · Semana '+S.semana+'</span><span class="cont" aria-label="Exercício '+(j+1)+' de '+d.ex.length+'">'+(j+1)+'/'+d.ex.length+'</span></div>'
     +'<h1>'+esc(e.nome)+'</h1><div class="exercise-progress"><strong id="ex-status" aria-live="polite">'+feitas+' de '+e.series+' séries concluídas</strong>'
     +'<span>Descanso: 60s</span></div><div class="track"><i id="ex-progress" style="width:'+feitas/e.series*100+'%"></i></div></header>'
+    +(e.img?'<div class="figcard">'+figura(e.img,true)+'</div><p class="credito">Desenho: <a href="https://everkinetic.com" target="_blank" rel="noopener">Everkinetic</a> · CC BY-SA 4.0</p>':"")
+    +(e.cat?'<details class="como" data-cat="'+e.cat+'"><summary>Como fazer</summary><div class="como-corpo">Carregando…</div></details>':"")
     +'<p class="registration-hint">Ajuste os valores e conclua cada série para salvar.</p>'
     +'<div class="sets stagger" style="'+varCor(i)+'">'+sets+'</div>'
     +'<nav class="nav workout-nav" aria-label="Navegação do treino"><button class="press" data-a="pula" data-v="-1" aria-label="Exercício anterior"'+(j?"":" disabled")+'>‹ Anterior</button>'
@@ -687,6 +739,8 @@ function vProg(){
 function vEditar(){
   const dias=S.plano.map((d,i)=>{
     const exs=d.ex.map(e=>'<div class="eex"><input class="nome" data-a="nome" data-u="'+e.uid+'" value="'+esc(e.nome)+'">'
+      +'<button class="troca press" data-a="pick" data-u="'+e.uid+'" aria-label="Escolher do catálogo: '+esc(e.nome)+'">'
+      +'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>'
       +'<span class="qtd"><button class="mini-step press" data-a="ser" data-u="'+e.uid+'" data-v="-1">−</button>'
       +'<b>'+e.series+'</b><button class="mini-step press" data-a="ser" data-u="'+e.uid+'" data-v="1">+</button></span>'
       +'<button class="del press" data-a="delex" data-u="'+e.uid+'" aria-label="Remover">✕</button></div>').join("");
@@ -761,10 +815,13 @@ document.addEventListener("click",ev=>{
     const d=S.plano.find(d=>d.ex.some(e=>e.uid===b.dataset.u));
     d.ex=d.ex.filter(e=>e.uid!==b.dataset.u); salvar(); render("fwd");
   }
-  if(a==="addex"){
-    const d=dia(b.dataset.d);
-    d.ex.push({uid:d.id+"-"+Math.random().toString(36).slice(2,7),nome:"Novo exercício",series:3});
-    salvar(); render("fwd");
+  if(a==="addex") abrirPick({d:b.dataset.d});
+  if(a==="pick") abrirPick({u:b.dataset.u});
+  if(a==="pickParte"){pick.p=pick.p===+b.dataset.p?-1:+b.dataset.p;atualizaPick()}
+  if(a==="pickEsc") escolheEx(+b.dataset.id);
+  if(a==="pickLivre"){
+    if(pick.d) novoEx(pick.d,{nome:"Novo exercício"});
+    fecharSheet(null,true); render("fwd");
   }
   if(a==="novoCiclo") confirmarCiclo();
   if(a==="confirmaCiclo") novoCiclo();
@@ -790,6 +847,7 @@ document.addEventListener("input",ev=>{
     if(t.dataset.k==="semanas"){const n=parseInt(limpo||"12",10);S.semanas=Math.min(52,Math.max(1,n||12));
       S.semana=Math.min(S.semana,S.semanas);salvar()}
   }
+  if(t.id==="pick-q"){pick.q=t.value;atualizaPick()}
   if(t.dataset.a==="nome"){achaEx(t.dataset.u).nome=t.value;salvar()}
   if(t.dataset.a==="tit"){dia(t.dataset.d).titulo=t.value;salvar()}
 });
@@ -891,6 +949,101 @@ function confirmarDelMedida(i){
   document.getElementById("wrap").classList.remove("off");
 }
 
+/* =============================================================
+   CATÁLOGO DE EXERCÍCIOS (do openGym, em português) — baixado só quando preciso
+============================================================= */
+let CAT=null, PASSOS=null, pick={d:null,u:null,q:"",p:-1};
+const semAcento=t=>t.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+function carrega(url){
+  return fetch(url).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()});
+}
+function carregaCat(){
+  if(!CAT) CAT=carrega("catalogo/indice.json").then(d=>{
+    d.ex=d.ex.map(([id,nome,p,q,a,img])=>({id,nome,p,q,a,img,
+      nb:semAcento(nome),eb:semAcento(d.alvos[a]+" "+d.equip[q])}));
+    d.porId=new Map(d.ex.map(x=>[x.id,x]));
+    return d;
+  }).catch(e=>{CAT=null;throw e});
+  return CAT;
+}
+function carregaPassos(){
+  if(!PASSOS) PASSOS=carrega("catalogo/passos.json").catch(e=>{PASSOS=null;throw e});
+  return PASSOS;
+}
+/* as duas poses do desenho (Everkinetic); n = número do desenho */
+const figura=(n,anima)=>'<div class="fig" aria-hidden="true"><img src="catalogo/img/'+n+'-0.webp" alt="" loading="lazy">'
+  +(anima?'<img src="catalogo/img/'+n+'-1.webp" alt="" loading="lazy">':"")+'</div>';
+function novoEx(diaId,extra){
+  const d=dia(diaId);
+  d.ex.push(Object.assign({uid:d.id+"-"+Math.random().toString(36).slice(2,7),nome:"Novo exercício",series:3},extra));
+  salvar();
+}
+function abrirPick(alvo){
+  pick={d:alvo.d||null,u:alvo.u||null,q:"",p:-1};
+  const sh=document.getElementById("sheet");
+  sh.className="sheet pick";
+  sh.innerHTML='<div class="grab"></div><h2>Escolher exercício</h2>'
+    +'<input id="pick-q" class="pick-q" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" '
+    +'placeholder="Buscar: supino, agachamento, bíceps…" aria-label="Buscar exercício">'
+    +'<div class="pick-chips" id="pick-chips"></div><ul class="pick-lista" id="pick-lista"><li class="pick-msg">Carregando catálogo…</li></ul>'
+    +(pick.d?'<button class="addex press" data-a="pickLivre">+ Criar exercício sem catálogo</button>':"")
+    +'<button class="fechar press" onclick="fecharSheet(null,true)">Fechar</button>';
+  document.getElementById("wrap").classList.remove("off");
+  carregaCat().then(()=>{atualizaPick();document.getElementById("pick-q")?.focus()},
+    ()=>{document.getElementById("pick-lista").innerHTML='<li class="pick-msg">Não consegui carregar o catálogo. '
+      +'Conecte-se à internet uma vez para baixá-lo; depois ele funciona offline.</li>'});
+}
+function atualizaPick(){
+  const lista=document.getElementById("pick-lista"); if(!lista||!CAT)return;
+  CAT.then(c=>{
+    document.getElementById("pick-chips").innerHTML=c.partes.map((n,i)=>
+      '<button class="press'+(pick.p===i?" on":"")+'" data-a="pickParte" data-p="'+i+'" aria-pressed="'+(pick.p===i)+'">'+n+'</button>').join("");
+    const toks=semAcento(pick.q).split(/\s+/).filter(Boolean);
+    if(!toks.length&&pick.p<0){
+      lista.innerHTML='<li class="pick-msg">Digite o nome do exercício ou escolha um grupo muscular acima. '
+        +'São '+c.ex.length.toLocaleString("pt-BR")+' exercícios.</li>';return;
+    }
+    const achados=[];
+    for(const x of c.ex){
+      if(pick.p>=0&&x.p!==pick.p)continue;
+      let sc=0;
+      for(const t of toks){
+        if(x.nb.startsWith(t))sc+=0; else if(x.nb.includes(" "+t))sc+=1; else if(x.nb.includes(t))sc+=2;
+        else if(x.eb.includes(t))sc+=4; else {sc=-1;break}
+      }
+      if(sc>=0)achados.push([sc,x]);
+    }
+    achados.sort((a,b)=>a[0]-b[0]||!a[1].img-!b[1].img||a[1].nome.length-b[1].nome.length||a[1].nome.localeCompare(b[1].nome,"pt-BR"));
+    const MAX=60, mostra=achados.slice(0,MAX);
+    lista.innerHTML=mostra.length?mostra.map(([,x])=>'<li><button class="pick-it press" data-a="pickEsc" data-id="'+x.id+'">'
+      +(x.img?figura(x.img,false):'<i class="ph"></i>')
+      +'<span><strong>'+esc(x.nome)+'</strong><small>'+c.alvos[x.a]+' · '+c.equip[x.q]+'</small></span></button></li>').join("")
+      +(achados.length>MAX?'<li class="pick-msg">Mostrando '+MAX+' de '+achados.length+'. Digite mais para refinar.</li>':"")
+      :'<li class="pick-msg">Nada encontrado para essa busca.</li>';
+    lista.scrollTop=0;
+  });
+}
+function escolheEx(id){
+  CAT.then(c=>{
+    const x=c.porId.get(id); if(!x)return;
+    if(pick.u){const e=achaEx(pick.u); e.nome=x.nome; e.cat=x.id; e.img=x.img||undefined; salvar()}
+    else novoEx(pick.d,{nome:x.nome,cat:x.id,img:x.img||undefined});
+    fecharSheet(null,true); render("fwd");
+  });
+}
+/* "Como fazer": preenche quando o painel é aberto */
+document.addEventListener("toggle",ev=>{
+  const dt=ev.target; if(!dt.classList||!dt.classList.contains("como")||!dt.open)return;
+  const corpo=dt.querySelector(".como-corpo"), id=+dt.dataset.cat;
+  Promise.all([carregaCat(),carregaPassos()]).then(([c,p])=>{
+    const x=c.porId.get(id), bruto=p[id], en=bruto&&!Array.isArray(bruto), passos=en?bruto.en:bruto;
+    if(!x||!passos){corpo.textContent="Sem instruções para este exercício.";return}
+    corpo.innerHTML='<div class="tags"><span>'+c.alvos[x.a]+'</span><span>'+c.equip[x.q]+'</span><span>'+c.partes[x.p]+'</span></div>'
+      +(en?'<p class="hint" style="margin:.7rem 0 0">Este passo a passo ainda não tem tradução e está em inglês.</p>':"")
+      +'<ol>'+passos.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ol>';
+  }).catch(()=>{corpo.textContent="Instruções indisponíveis offline. Abra uma vez com internet para baixá-las."});
+},true);
+
 /* ---- ciclos ---- */
 function confirmarCiclo(){
   document.getElementById("sheet").innerHTML='<div class="grab"></div><h2>Começar o ciclo '+(S.ciclo+1)+'?</h2>'
@@ -925,7 +1078,10 @@ function abrirSheet(){
   document.getElementById("wrap").classList.remove("off");
 }
 function fecharSheet(ev,forcar){
-  if(forcar||ev&&ev.target.id==="wrap") document.getElementById("wrap").classList.add("off");
+  if(forcar||ev&&ev.target.id==="wrap"){
+    document.getElementById("wrap").classList.add("off");
+    document.getElementById("sheet").className="sheet";
+  }
 }
 
 /* start */
